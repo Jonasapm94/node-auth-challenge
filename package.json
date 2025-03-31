@@ -28,6 +28,7 @@
     "@fastify/session": "^11.1.0",
     "@fastify/view": "^11.0.0",
     "ajv-formats": "^3.0.1",
+    "bcryptjs": "^3.0.2",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
     "ejs": "^3.1.10",

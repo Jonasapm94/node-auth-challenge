@@ -1,0 +1,38 @@
+<div>
+  <label for="name">Name:</label>
+  <input type="text" id="name" name="name" value="<%= user.name %>" />
+</div>
+
+<div>
+  <label for="email">Email:</label>
+  <input type="email" id="email" name="email" value="<%= user.email %>" />
+</div>
+
+<div>
+  <label for="password">Password:</label>
+  <input type="password" id="password" name="password" value="<%= user.password %>" />
+</div>
+
+<div>
+  <label>Role:</label>
+  <div>
+    <input type="radio" id="admin" name="role" value="admin" <%= user.role === 'admin' ? 'checked' : '' %> />
+    <label for="admin">Admin</label>
+  
+    <input type="radio" id="dealership" name="role" value="dealership" <%= user.role === 'dealership' ? 'checked' : '' %> />
+    <label for="dealership">Dealership</label>
+  </div>
+</div>
+
+<div>
+  <label for="dealerships">Dealership:</label>
+
+  <select name="dealershipId" id="dealerships" <%= user.dealershipId %> >
+    <% dealerships.forEach(function(d) { %>
+      <option value="<%= d.id %>"><%= d.name %></option>
+    <% }); %>
+  </select>
+</div>
+
+<input type="reset" value="Reset">
+<button type="submit">Save</button>

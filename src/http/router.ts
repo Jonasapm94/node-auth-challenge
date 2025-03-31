@@ -1,6 +1,7 @@
 import plugin from 'fastify-plugin';
 import * as DealershipController from './controllers/dealershipController.js';
 import * as VehiclesController from './controllers/vehiclesController.js';
+import * as UsersController from './controllers/usersController.js';
 
 const router = plugin(async (server, _) => {
   server.get('/dealerships', DealershipController.index);
@@ -16,6 +17,12 @@ const router = plugin(async (server, _) => {
   server.get('/vehicles/:id/edit', VehiclesController.edit);
   server.post('/vehicles/:id', VehiclesController.update);
   server.get('/vehicles/:id/delete', VehiclesController.destroy);
+
+  server.get('/users', UsersController.index);
+  server.get('/signup', UsersController.create);
+  server.post('/signup', UsersController.store);
+  server.get('/users/:id/edit', UsersController.edit);
+  server.post('/users/:id', UsersController.update);
 });
 
 export { router };
