@@ -1,7 +1,7 @@
-import bcrypt from 'bcryptjs';
 import { handler } from '../../_lib/http/handler.js';
 import { UserModel, UserRoles } from '../../database/models/UserModel.js';
 import { DealershipModel } from '../../database/models/DealershipModel.js';
+import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
 import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
 
 const index = handler(async (request, reply) => {
@@ -22,7 +22,7 @@ const store = handler<{
   const { name, email, password, role, dealershipId } = request.body;
 
   try {
-    const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
+    const encryptedPassword = UserModel.hashPassword(password);
     const user = UserModel.fromJson({ name, email, encryptedPassword, role, dealershipId });
 
     if (!canCreateUserPolicy(user)) throw new Error('Dealership user must have a dealership ID');

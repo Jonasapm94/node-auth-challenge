@@ -1,6 +1,7 @@
 import { JSONSchema, ModelObject } from 'objection';
 import { BaseModel } from './BaseModel.js';
 import { DealershipModel, DealershipSchema } from './DealershipModel.js';
+import bcrypt from 'bcryptjs';
 
 export enum UserRoles {
   admin = 'admin',
@@ -42,6 +43,11 @@ class UserModel extends BaseModel {
         },
       },
     };
+  }
+
+  static async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt();
+    return await bcrypt.hash(password, salt);
   }
 }
 
