@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { handler } from '../../_lib/http/handler.js';
 import { UserModel, UserRoles } from '../../database/models/UserModel.js';
 import { DealershipModel } from '../../database/models/DealershipModel.js';
+import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
 
 const index = handler(async (request, reply) => {
   const users = await UserModel.query();
@@ -11,6 +12,7 @@ const index = handler(async (request, reply) => {
 
 const create = handler(async (request, reply) => {
   const dealerships = await DealershipModel.query();
+
   return reply.view('users/create', { user: new UserModel(), dealerships });
 });
 
@@ -20,10 +22,12 @@ const store = handler<{
   const { name, email, password, role, dealershipId } = request.body;
 
   try {
-    if (role === UserRoles.dealership && !dealershipId) throw new Error('Dealership user must have a dealership ID');
-
     const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
-    await UserModel.query().insert({ name, email, encryptedPassword, role, dealershipId });
+    const user = UserModel.fromJson({ name, email, encryptedPassword, role, dealershipId });
+
+    if (!canCreateUserPolicy(user)) throw new Error('Dealership user must have a dealership ID');
+
+    await user.$query().insert();
 
     return reply.redirect(`/users`);
   } catch (error) {
@@ -33,8 +37,16 @@ const store = handler<{
 });
 
 const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
-  const user = await UserModel.query().findById(request.params.id).throwIfNotFound();
-  const dealerships = await DealershipModel.query();
+  let user!: UserModel;
+  let dealerships!: DealershipModel[];
+  await Promise.all([
+    (async () => {
+      user = await UserModel.query().findById(request.params.id).throwIfNotFound();
+    })(),
+    (async () => {
+      dealerships = await DealershipModel.query();
+    })(),
+  ]);
 
   return reply.view('users/update', { user, dealerships });
 });
@@ -44,7 +56,9 @@ const update = handler<{
   Body: { name: string; email: string; password: string; role: UserRoles };
 }>(async (request, reply) => {
   const user = await UserModel.query().findById(request.params.id).throwIfNotFound();
+
   const { name, email, password, role } = request.body;
+
   const newUser = user.$set({ name, email, password, role });
 
   try {
