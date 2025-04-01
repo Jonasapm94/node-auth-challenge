@@ -19,8 +19,6 @@ const router = plugin(async (server, _) => {
   server.get('/vehicles/:id/delete', VehiclesController.destroy);
 
   server.get('/users', UsersController.index);
-  server.get('/signup', UsersController.create);
-  server.post('/signup', UsersController.store);
   server.get('/users/:id/edit', UsersController.edit);
   server.post('/users/:id', UsersController.update);
 });

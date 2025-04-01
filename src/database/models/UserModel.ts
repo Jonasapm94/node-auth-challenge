@@ -49,6 +49,16 @@ class UserModel extends BaseModel {
     const salt = await bcrypt.genSalt();
     return await bcrypt.hash(password, salt);
   }
+
+  static async authenticate(options: { email: string; password: string }) {
+    const { email, password } = options;
+    const user = await UserModel.query().findOne({ email }).throwIfNotFound();
+
+    const passwordIsMatched = await bcrypt.compare(password, user.encryptedPassword);
+    if (passwordIsMatched) return user;
+
+    return null;
+  }
 }
 
 export { UserModel };
