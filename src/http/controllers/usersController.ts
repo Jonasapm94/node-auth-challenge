@@ -2,9 +2,9 @@ import { handler } from '../../_lib/http/handler.js';
 import { UserModel, UserRoles } from '../../database/models/UserModel.js';
 import { DealershipModel } from '../../database/models/DealershipModel.js';
 import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
-import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
+import { authenticatedHandler } from '../auth.js';
 
-const index = handler(async (request, reply) => {
+const index = authenticatedHandler(async (request, reply) => {
   const users = await UserModel.query();
 
   return reply.view('users/index', { users });
@@ -36,7 +36,7 @@ const store = handler<{
   }
 });
 
-const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
+const edit = authenticatedHandler<{ Params: { id: string } }>(async (request, reply) => {
   let user!: UserModel;
   let dealerships!: DealershipModel[];
   await Promise.all([
@@ -51,7 +51,7 @@ const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
   return reply.view('users/update', { user, dealerships });
 });
 
-const update = handler<{
+const update = authenticatedHandler<{
   Params: { id: string };
   Body: { name: string; email: string; password: string; role: UserRoles };
 }>(async (request, reply) => {
