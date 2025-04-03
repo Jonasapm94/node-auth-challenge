@@ -26,4 +26,15 @@ describe("GET /vehicles", () => {
             expect(response.body).toEqual(expect.stringContaining('<h1>Vehicles</h1>'))
         })
     })
+
+    describe("when the request is made to the root path", () => {
+        it("redirects to the vehicles index page", async () => {
+            const response = await server.inject({
+                url: '/'
+            })
+
+            expect(response.statusCode).toBe(302)
+            expect(response.headers.location).toBe("/vehicles")
+        })
+    })
 })
