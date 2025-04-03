@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     table.string('email').notNullable().unique();
     table.string('encryptedPassword').notNullable();
     table.enum('role', ['admin', 'dealership']).notNullable();
-    table.integer('dealershipId').notNullable().references('id').inTable('dealerships');
+    table.integer('dealershipId').nullable().references('id').inTable('dealerships');
     table.timestamps(true, true, true);
   });
 }
