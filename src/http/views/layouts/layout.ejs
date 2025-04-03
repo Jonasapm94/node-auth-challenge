@@ -8,6 +8,16 @@
     <title>Auth Passport Challenge</title>
   </head>
   <body>
+    <nav>
+      <% if (currentUser) { %>
+        <span><%= currentUser.name %></span>
+        <a href="/logout">Logout</a>
+      <% } %>
+      <% if (!currentUser) { %>
+        <a href="/login">Login</a>
+        <a href="/signup">Sign up</a>
+      <% } %>
+    </nav>
     <section>
       <div>
         <%- body %>
