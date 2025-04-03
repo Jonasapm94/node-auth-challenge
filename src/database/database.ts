@@ -3,7 +3,7 @@ import { config } from '../config.js';
 import { BaseModel } from './models/BaseModel.js';
 
 const makeDatabase = () => {
-  const knex = Knex.knex({
+  const knex = Knex({
     ...config.db[config.env],
     debug: true,
   });
@@ -11,6 +11,8 @@ const makeDatabase = () => {
   BaseModel.knex(knex);
 
   return {
+    connection: knex,
+
     async connect() {
       await knex.raw('SELECT 1');
       console.log('Database connected successfully.');
