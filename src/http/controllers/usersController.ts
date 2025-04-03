@@ -59,7 +59,8 @@ const update = handler<{
 
   const { name, email, password, role } = request.body;
 
-  const newUser = user.$set({ name, email, password, role });
+  const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
+  const newUser = user.$set({ name, email, encryptedPassword, role });
 
   try {
     await newUser.$query().update();
@@ -67,7 +68,9 @@ const update = handler<{
     return reply.redirect(`/users`);
   } catch (error) {
     console.error(error);
-    return reply.view('users/update', { user: newUser });
+
+    const dealerships = await DealershipModel.query();
+    return reply.view('users/update', { user: newUser, dealerships });
   }
 });
 
