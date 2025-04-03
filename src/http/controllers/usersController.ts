@@ -22,17 +22,20 @@ const store = handler<{
   const { name, email, password, role, dealershipId } = request.body;
 
   try {
-    const encryptedPassword = UserModel.hashPassword(password);
+    const encryptedPassword = await UserModel.hashPassword(password);
     const user = UserModel.fromJson({ name, email, encryptedPassword, role, dealershipId });
 
     if (!canCreateUserPolicy(user)) throw new Error('Dealership user must have a dealership ID');
 
+    console.log(user)
     await user.$query().insert();
 
     return reply.redirect(`/users`);
   } catch (error) {
     console.error(error);
-    return reply.view('users/create', { user: new UserModel().$set({ name, email, password, role }) });
+
+    const dealerships = await DealershipModel.query();
+    return reply.view('users/create', { user: new UserModel().$set({ name, email, password, role }), dealerships });
   }
 });
 
@@ -59,7 +62,7 @@ const update = authenticatedHandler<{
 
   const { name, email, password, role } = request.body;
 
-  const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
+  const encryptedPassword = await UserModel.hashPassword(password);
   const newUser = user.$set({ name, email, encryptedPassword, role });
 
   try {
