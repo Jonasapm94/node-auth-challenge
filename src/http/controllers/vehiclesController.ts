@@ -14,7 +14,7 @@ const create = authenticatedHandler(async (request, reply) => {
 });
 
 const store = authenticatedHandler<{
-  Body: { name: string; brand: string; model: string; year: string; comments: string; dealershipId: number };
+  Body: { name: string; brand: string; model: string; year: string; comments: string; };
 }>(async (request, reply) => {
   const { name, brand, model, year, comments } = request.body;
 
