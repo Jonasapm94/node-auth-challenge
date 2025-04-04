@@ -1,10 +1,10 @@
 import { beforeEach, beforeAll, describe, afterAll, it, expect } from "vitest";
-import { IntegrationTest, setupIntegrationTest } from "../src/_lib/testSupport/setupIntegrationTest.js";
+import { IntegrationTest, setupIntegrationTest } from "../../src/_lib/testSupport/setupIntegrationTest.js";
 import { FastifyInstance } from "fastify";
-import { makeServer } from "../src/http/server.js";
+import { makeServer } from "../../src/http/server.js";
 import { faker } from '@faker-js/faker';
-import { UserModel, UserRoles } from "../src/database/models/UserModel.js";
-import { DealershipFactory } from "../src/_lib/testSupport/factories/DealershipFactory.js";
+import { UserModel, UserRoles } from "../../src/database/models/UserModel.js";
+import { DealershipFactory } from "../../src/_lib/testSupport/factories/DealershipFactory.js";
 
 describe("POST /signup", () => {
     let integrationTest: IntegrationTest
@@ -20,7 +20,7 @@ describe("POST /signup", () => {
     })
 
     afterAll(async () => {
-        await integrationTest.tearDown()
+        await integrationTest.tearDown();
     })
 
     describe("when the input is valid", () => {

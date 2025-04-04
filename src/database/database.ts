@@ -5,7 +5,7 @@ import { BaseModel } from './models/BaseModel.js';
 const makeDatabase = () => {
   const knex = Knex({
     ...config.db[config.env],
-    debug: true,
+    debug: config.env === 'test' ? false : true,
   });
 
   BaseModel.knex(knex);

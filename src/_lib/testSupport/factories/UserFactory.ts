@@ -8,6 +8,7 @@ import { DealershipFactory } from "./DealershipFactory.js";
 export const UserFactory = Factory.define<ModelObject<UserModel>, {}, UserModel>(
     ({ onCreate, sequence, params }) => {
         onCreate(async (user) => {
+            delete user.password;
             return await UserModel.query().insertAndFetch(user);
         })
 

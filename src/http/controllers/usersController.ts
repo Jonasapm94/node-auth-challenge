@@ -1,10 +1,10 @@
-import bcrypt from 'bcryptjs';
 import { handler } from '../../_lib/http/handler.js';
 import { UserModel, UserRoles } from '../../database/models/UserModel.js';
 import { DealershipModel } from '../../database/models/DealershipModel.js';
 import { canCreateUserPolicy } from '../../policies/createUserPolicies.js';
+import { authenticatedHandler } from '../auth.js';
 
-const index = handler(async (request, reply) => {
+const index = authenticatedHandler(async (request, reply) => {
   const users = await UserModel.query();
 
   return reply.view('users/index', { users });
@@ -22,7 +22,7 @@ const store = handler<{
   const { name, email, password, role, dealershipId } = request.body;
 
   try {
-    const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
+    const encryptedPassword = await UserModel.hashPassword(password);
     const user = UserModel.fromJson({ name, email, encryptedPassword, role, dealershipId });
 
     if (!canCreateUserPolicy(user)) throw new Error('Dealership user must have a dealership ID');
@@ -32,11 +32,13 @@ const store = handler<{
     return reply.redirect(`/users`);
   } catch (error) {
     console.error(error);
-    return reply.view('users/create', { user: new UserModel().$set({ name, email, password, role }) });
+
+    const dealerships = await DealershipModel.query();
+    return reply.view('users/create', { user: new UserModel().$set({ name, email, password, role }), dealerships });
   }
 });
 
-const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
+const edit = authenticatedHandler<{ Params: { id: string } }>(async (request, reply) => {
   let user!: UserModel;
   let dealerships!: DealershipModel[];
   await Promise.all([
@@ -51,7 +53,7 @@ const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
   return reply.view('users/update', { user, dealerships });
 });
 
-const update = handler<{
+const update = authenticatedHandler<{
   Params: { id: string };
   Body: { name: string; email: string; password: string; role: UserRoles };
 }>(async (request, reply) => {
@@ -59,7 +61,7 @@ const update = handler<{
 
   const { name, email, password, role } = request.body;
 
-  const encryptedPassword = await bcrypt.hash(password, bcrypt.genSaltSync());
+  const encryptedPassword = await UserModel.hashPassword(password);
   const newUser = user.$set({ name, email, encryptedPassword, role });
 
   try {

@@ -7,6 +7,7 @@ import { router } from './router.js';
 import { fastifyCookie } from '@fastify/cookie';
 import { fastifySession } from '@fastify/session';
 import { fastifyFormbody } from '@fastify/formbody';
+import { authPlugin } from './plugins/authPlugin.js';
 
 const __dirname = fileURLToPath(new URL('.', import.meta.url));
 
@@ -24,6 +25,7 @@ const makeServer = () => {
 
   server.register(fastifyCookie);
   server.register(fastifySession, { secret: '69DB95EA161AC342B1AC7D45EAB22456', cookie: { secure: false } });
+  server.register(authPlugin);
   server.register(fastifyFormbody);
 
   server.register(router);

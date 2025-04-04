@@ -1,17 +1,17 @@
-import { handler } from '../../_lib/http/handler.js';
 import { DealershipModel } from '../../database/models/DealershipModel.js';
+import { authenticatedHandler } from '../auth.js';
 
-const index = handler(async (request, reply) => {
+const index = authenticatedHandler(async (request, reply) => {
   const dealerships = await DealershipModel.query();
 
   return reply.view('dealerships/index', { dealerships });
 });
 
-const create = handler(async (request, reply) => {
+const create = authenticatedHandler(async (request, reply) => {
   return reply.view('dealerships/create', { dealership: new DealershipModel() });
 });
 
-const store = handler<{ Body: { name: string } }>(async (request, reply) => {
+const store = authenticatedHandler<{ Body: { name: string } }>(async (request, reply) => {
   const { name } = request.body;
 
   try {
@@ -24,13 +24,13 @@ const store = handler<{ Body: { name: string } }>(async (request, reply) => {
   }
 });
 
-const edit = handler<{ Params: { id: string } }>(async (request, reply) => {
+const edit = authenticatedHandler<{ Params: { id: string } }>(async (request, reply) => {
   const dealership = await DealershipModel.query().findById(request.params.id).throwIfNotFound();
 
   return reply.view('dealerships/update', { dealership });
 });
 
-const update = handler<{
+const update = authenticatedHandler<{
   Params: { id: string };
   Body: { name: string };
 }>(async (request, reply) => {
@@ -48,7 +48,7 @@ const update = handler<{
   }
 });
 
-const destroy = handler<{ Params: { id: string } }>(async (request, reply) => {
+const destroy = authenticatedHandler<{ Params: { id: string } }>(async (request, reply) => {
   try {
     await DealershipModel.query().findById(request.params.id).throwIfNotFound().delete();
 

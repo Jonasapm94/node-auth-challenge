@@ -1,6 +1,7 @@
 import { JSONSchema, ModelObject } from 'objection';
 import { BaseModel } from './BaseModel.js';
 import { DealershipModel, DealershipSchema } from './DealershipModel.js';
+import bcrypt from 'bcryptjs';
 
 export enum UserRoles {
   admin = 'admin',
@@ -13,7 +14,7 @@ class UserModel extends BaseModel {
   id!: number;
   name!: string;
   email!: string;
-  password!: string;
+  password?: string;
   encryptedPassword!: string;
   role!: UserRoles;
   dealership!: DealershipSchema | null;
@@ -42,6 +43,21 @@ class UserModel extends BaseModel {
         },
       },
     };
+  }
+
+  static async hashPassword(password: string) {
+    const salt = await bcrypt.genSalt();
+    return await bcrypt.hash(password, salt);
+  }
+
+  static async authenticate(options: { email: string; password: string }) {
+    const { email, password } = options;
+    const user = await UserModel.query().findOne({ email }).throwIfNotFound();
+
+    const passwordIsMatched = await bcrypt.compare(password, user.encryptedPassword);
+    if (passwordIsMatched) return user;
+
+    return null;
   }
 }
 
