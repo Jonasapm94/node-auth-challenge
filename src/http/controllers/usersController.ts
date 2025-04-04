@@ -27,7 +27,6 @@ const store = handler<{
 
     if (!canCreateUserPolicy(user)) throw new Error('Dealership user must have a dealership ID');
 
-    console.log(user)
     await user.$query().insert();
 
     return reply.redirect(`/users`);

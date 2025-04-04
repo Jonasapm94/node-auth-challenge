@@ -6,6 +6,7 @@ import { faker } from "@faker-js/faker";
 import { IntegrationTest, setupIntegrationTest } from "../../src/_lib/testSupport/setupIntegrationTest.js";
 import { VehicleModel } from "../../src/database/models/VehicleModel.js";
 import { DealershipFactory } from "../../src/_lib/testSupport/factories/DealershipFactory.js";
+import { UserRoles } from "../../src/database/models/UserModel.js";
 
 describe("POST /vehicles", () => {
     let server: FastifyInstance;
@@ -21,7 +22,6 @@ describe("POST /vehicles", () => {
     })
 
     afterAll(async () => {
-        await integrationTest.cleanDatabase();
         await integrationTest.tearDown();
     })
 
@@ -29,7 +29,7 @@ describe("POST /vehicles", () => {
         it("the vehicle created will have the user's dealership Id", async () => {
             const dealership = await DealershipFactory.create();
             const password = faker.internet.password();
-            const user = await UserFactory.create({ dealership, dealershipId: dealership.id, password });
+            const user = await UserFactory.create({ role: UserRoles.dealership, dealership, dealershipId: dealership.id, password });
 
             const loginRequest = await server.inject({
                 method: "POST",

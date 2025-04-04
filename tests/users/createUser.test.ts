@@ -20,7 +20,6 @@ describe("POST /signup", () => {
     })
 
     afterAll(async () => {
-        await integrationTest.cleanDatabase();
         await integrationTest.tearDown();
     })
 
