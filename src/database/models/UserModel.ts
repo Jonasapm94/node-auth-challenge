@@ -14,7 +14,7 @@ class UserModel extends BaseModel {
   id!: number;
   name!: string;
   email!: string;
-  password!: string;
+  password?: string;
   encryptedPassword!: string;
   role!: UserRoles;
   dealership!: DealershipSchema | null;
